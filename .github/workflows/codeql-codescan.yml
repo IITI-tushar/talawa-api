@@ -31,11 +31,11 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
         with:
-          category: "language-typescript"
-          output: results-typescript.sarif  # Generates SARIF file in current directory
+          category: "typescript-analysis" # Ensure this is unique
+          output: "results-typescript.sarif" # File generated in the working directory
 
       - name: Upload SARIF to GitHub Security
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: results-typescript.sarif
-          category: "language-typescript"
+          sarif_file: "results-typescript.sarif" # Path to the generated file
+          category: "typescript-analysis" # Must match the analyze step
