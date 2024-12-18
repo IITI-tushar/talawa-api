@@ -14,10 +14,10 @@ name: CodeQL codescan workflow
 on:
   pull_request:
     branches:
-      - '**'  
+      - '**'
   push:
     branches:
-      - '**'   
+      - '**'
 
 jobs:
   CodeQL:
@@ -29,23 +29,36 @@ jobs:
       contents: read
       security-events: write
 
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ 'typescript']
+    # strategy:
+    #   fail-fast: false
+    #   matrix:
+    #     language: [ 'typescript' ]
+    #     directory: [ 'src/components', 'src/utils', 'src/services' ] # List of directories to scan
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-      with:
-        languages: ${{ matrix.language }}
-        debug: true
-        
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v2
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ matrix.language }}
+          debug: true
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
+      - name: CodeQL Analysis for Directory
+        run: |
+          echo "Scanning directory: ${{ matrix.directory }}"
+          codeql database create db-${{ matrix.directory }} --language=${{ matrix.language }} --source-root=${{ matrix.directory }}
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          category: "/language:${{ matrix.language }}-${{ matrix.directory }}"
+          output: results-${{ matrix.directory }}.sarif
+
+      - name: Upload SARIF to GitHub Security
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: results-${{ matrix.directory }}.sarif
+
+
