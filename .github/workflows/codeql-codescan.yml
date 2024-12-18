@@ -33,10 +33,12 @@ jobs:
           languages: ${{ matrix.language }}
           debug: true
 
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
-        with:
-          category: "language-${{ matrix.language }}"
+- name: Perform CodeQL Analysis
+  uses: github/codeql-action/analyze@v2
+  with:
+    category: "language-${{ matrix.language }}"
+    output: results-${{ matrix.language }}.sarif  # Generates SARIF file in current directory
+
 
       - name: Upload SARIF to GitHub Security
         uses: github/codeql-action/upload-sarif@v2
